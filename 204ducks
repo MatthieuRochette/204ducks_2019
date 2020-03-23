@@ -1,0 +1,93 @@
+#!/usr/bin/python3
+
+from math import sqrt, exp, ceil
+from sys import argv as av
+
+INFINITE = 10000
+
+def part_6():
+    pass
+def part_5():
+    pass
+
+def part_3_or_4(p):
+    print("Time after which {0:02d}% of the ducks are back:".format(int(p * 100)), end=" ")
+    P0 = proba_back(0)
+    t = 0.0
+    while t < INFINITE:
+        if proba_back(t) - P0 >= p:
+            print("{0}m {1:02d}s".format(*t_to_m(t, 0)))
+            break
+        t += 0.001
+
+def part_2():
+    print("Standard deviation:", end=" ")
+    sum = 0.0
+    t = 0.0
+    for t in range(INFINITE * 10 + 1):
+        sum += ((t / INFINITE * 10 - mean) ** 2) * f(t / 1000) / 1000
+    sum = sqrt(sum)
+    print("{0:.3f}".format(sum))
+    return sum
+
+def part_1():
+    print("Average return time:", end=" ")
+    sum = 0.0
+    t = 0.0
+    for t in range(INFINITE + 1):
+        sum += t / (INFINITE * 100) * f(t / 1000)
+    print("{0}m {1:02d}s".format(*t_to_m(sum)))
+    return sum
+
+def f(t):
+    global a
+    A = a * exp(-t)
+    B = (4 - (3 * a)) * exp(-2 * t)
+    C = ((2 * a) - 4) * exp(-4 * t)
+    return A + B + C
+
+def proba_back(t):
+    global a
+    A = -a * exp(-t)
+    B = (4 - 3 * a) / 2 * exp(-2 * t)
+    C = (2 * a - 4) / 4 * exp(-4 * t)
+    return A - B - C
+
+def integrale_simpson(a, b):
+    A = (b - a) / 6
+    B = (a + b) / 2
+    C = f(a) + 4 * f(B) + f(b)
+    return A * C
+
+def t_to_m(time, do_ceil=1):
+    minutes = int(time)
+    seconds = (time - minutes) * 60
+    if do_ceil:
+        seconds = ceil(seconds)
+    else:
+        seconds = int(seconds)
+    return (minutes, seconds)
+
+def print_usage(ret):
+    print("USAGE")
+    print("\t./204ducks a")
+    print("\nDESCRIPTION")
+    print("\ta\tconstant")
+    exit(ret)
+
+if __name__ == "__main__":
+    if len(av) != 2:
+        print_usage(84)
+    elif av[1] == "-h":
+        print_usage(0)
+    try:
+        a = float(av[1])
+        if a < 0 or a > 2.5:
+            print_usage(84)
+        mean = part_1()
+        std = part_2()
+        part_3_or_4(0.5)
+        part_3_or_4(0.99)
+    except Exception as excp:
+        print(excp)
+        exit(84)
