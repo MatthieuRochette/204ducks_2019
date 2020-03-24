@@ -3,16 +3,16 @@
 from math import sqrt, exp, ceil
 from sys import argv as av
 
-INFINITE = 10000
-
-def part_6():
-    pass
-def part_5():
-    pass
+def part_5_or_6(minutes):
+    print("Percentage of ducks back after %d minute" % minutes, end="")
+    if (minutes > 1):
+        print(end="s")
+    print(end=": ")
+    result = (proba_back(minutes) - P0)
+    print("{0:.1f}%".format(result * 100))
 
 def part_3_or_4(p):
     print("Time after which {0:02d}% of the ducks are back:".format(int(p * 100)), end=" ")
-    P0 = proba_back(0)
     t = 0.0
     while t < INFINITE:
         if proba_back(t) - P0 >= p:
@@ -33,7 +33,6 @@ def part_2():
 def part_1():
     print("Average return time:", end=" ")
     sum = 0.0
-    t = 0.0
     for t in range(INFINITE + 1):
         sum += t / (INFINITE * 100) * f(t / 1000)
     print("{0}m {1:02d}s".format(*t_to_m(sum)))
@@ -56,7 +55,7 @@ def proba_back(t):
 def integrale_simpson(a, b):
     A = (b - a) / 6
     B = (a + b) / 2
-    C = f(a) + 4 * f(B) + f(b)
+    C = f(a) + 4 * proba_back(B) + proba_back(b)
     return A * C
 
 def t_to_m(time, do_ceil=1):
@@ -75,6 +74,9 @@ def print_usage(ret):
     print("\ta\tconstant")
     exit(ret)
 
+INFINITE = 10000
+P0 = 0.0
+
 if __name__ == "__main__":
     if len(av) != 2:
         print_usage(84)
@@ -84,10 +86,13 @@ if __name__ == "__main__":
         a = float(av[1])
         if a < 0 or a > 2.5:
             print_usage(84)
+        P0 = proba_back(0)
         mean = part_1()
         std = part_2()
         part_3_or_4(0.5)
         part_3_or_4(0.99)
+        part_5_or_6(1)
+        part_5_or_6(2)
     except Exception as excp:
         print(excp)
         exit(84)
